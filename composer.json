@@ -1,0 +1,31 @@
+{
+    "name": "gonicus/gosa2-plugin-privacyidea",
+    "description": "GOsa² plugin for multifactor authentication management for GOsa² using privacyIDEA.",
+    "type": "library",
+    "license": [
+        "GPL-2.0-or-later"
+    ],
+    "require": {
+        "php": ">=8.1",
+        "privacyidea/privacyidea-php-client": "^1.1"
+    },
+    "autoload": {
+        "classmap": [
+            "src/personal/privacyidea"
+        ],
+        "psr-4": {
+            "GosaPrivacyIdea\\" : "src/"
+        },
+        "files": [
+            "src/functions.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "Daniel Teichmann <daniel.teichmann@das-netzwerkteam.de>",
+            "role": "Developer",
+            "homepage": "https://das-netzwerkteam.de/"
+        }
+    ]
+}
+
