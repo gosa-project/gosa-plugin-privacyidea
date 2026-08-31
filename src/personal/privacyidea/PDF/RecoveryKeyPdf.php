@@ -21,6 +21,7 @@
  */
 
 namespace GosaPrivacyIdea\personal\privcyidea\PDF;
+use tFPDF;
 
 /* Don't load this class automatically */ class RecoveryKeyPdf extends tFPDF
 {
