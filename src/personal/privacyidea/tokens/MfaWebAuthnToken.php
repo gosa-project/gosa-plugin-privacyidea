@@ -20,22 +20,22 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once(dirname(__FILE__) . "/interfaces/interface_MFAToken.inc");
+namespace GosaPrivacyIdea\personal\privcyidea\tokens;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
+use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
 
-class MFAPaperToken extends MFATokenHelper implements MFAToken
+class MfaWebAuthnToken extends MfaTokenHelper implements MfaToken
 {
-    public $MAX_SETUP_PHASES = 4;
-    public $TEMPLATE_PREFIX = "mfatype_paper/";
+    public $MAX_SETUP_PHASES = 3;
+    public $TEMPLATE_PREFIX = "mfatype_webauthn/";
 
     /* VARIABLES WHICH WILL BE NEEDED ACROSS PHASES */
     /** @var string */
     private $tokenDescription;
     /** @var string */
     private $tokenSerial;
-    /** @var string */
-    private $mfaVerificationTan;
-    /** @var string Token serial of a token, which needs verifying (rollout_state = 'verify'). */
-    private $needsVerifying;
+    /** @var array webAuthnRegisterResponse Object */
+    private $mfaWebAuthnRegisterResponse;
 
     /** @return bool */
     protected function evaluatePhase0()
@@ -54,8 +54,6 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
     /** @return bool */
     protected function evaluatePhase1()
     {
-        $this->tokenSerial = "";
-
         $tokenSerial = $this->utils->getPOSTTokenSerial();
         if (!isset($tokenSerial) || empty($tokenSerial)) {
             msg_dialog::display(
@@ -67,41 +65,22 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
 
             return false;
         }
-
         $this->tokenSerial = $tokenSerial;
+
+        $this->mfaWebAuthnRegisterResponse = "";
+        if (isset($_POST["mfaWebAuthnRegisterResponse"])) {
+            $mfaWebAuthnRegisterResponse = $_POST["mfaWebAuthnRegisterResponse"];
+            $this->mfaWebAuthnRegisterResponse = json_decode($mfaWebAuthnRegisterResponse, true);
+        } else {
+            // TODO: Error dialog here.
+            return false;
+        }
+
         return true;
     }
 
     /** @return bool */
     protected function evaluatePhase2()
-    {
-        $this->mfaVerificationTan = "";
-
-        $mfaVerificationTan = $_POST["mfaVerificationTan"];
-        if (isset($mfaVerificationTan) && !empty($mfaVerificationTan)) {
-            // Remove everything which isn't a digit.
-            $mfaVerificationTan = preg_replace('~\D~', '', $mfaVerificationTan);
-
-            if (!is_numeric($mfaVerificationTan)) {
-                // Okay, $mfaTOTPCode is definitely borked.
-                msg_dialog::display(
-                    _("Internal error"),
-                    _("Given validation code was malformed. We couldn't verify your token.") . "<br>" .
-                    $this->utils->pleaseTryAgainMsg(),
-                    ERROR_DIALOG
-                );
-
-                return false;
-            }
-        }
-
-        $this->mfaVerificationTan = $mfaVerificationTan;
-
-        return true;
-    }
-
-    /** @return bool */
-    protected function evaluatePhase3()
     {
         return true;
     }
@@ -109,7 +88,7 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
     /** @return bool */
     protected function preparePhase0()
     {
-        $limitReachedMessage = $this->checkUserTokenLimit("paper");
+        $limitReachedMessage = $this->checkUserTokenLimit("webauthn");
         if (!empty($limitReachedMessage)) {
             msg_dialog::display(
                 _("Internal error"),
@@ -127,7 +106,7 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
     protected function preparePhase1()
     {
         $this->smarty = get_smarty();
-        $limitReachedMessage = $this->checkUserTokenLimit("paper");
+        $limitReachedMessage = $this->checkUserTokenLimit("webauthn");
         if (!empty($limitReachedMessage)) {
             msg_dialog::display(
                 _("Internal error"),
@@ -141,7 +120,7 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
         $token = $this->utils->enrollTokenStep1(
             $this->mfaAccount->getUid(),
             $this->mfaAccount->userRealm,
-            "paper",
+            "webauthn",
             $this->tokenDescription
         );
 
@@ -156,39 +135,29 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
             return false;
         }
 
-        $this->needsVerifying = "";
-        if ($token["detail"]["rollout_state"] == "verify") {
-            $this->needsVerifying = $token["detail"]["serial"];
-        }
-
-        $tokenSerial  = $token["detail"]["serial"];
-        $tokenOTPs    = $token["detail"]["otps"];
-        $tokenConfTAN = $token["detail"]["otps"][0];
-
-        $amountOfPaperTokenOTPs = $this->utils->getConfigIntValue("piAmountOfPaperTokenOTPs");
-
-        if ($amountOfPaperTokenOTPs == 0) {
-            // This is most likely an error. (Just disable paper tokens / TAN lists?!)
-            // Assume healthy default value.
-
-            new log(
-                "modify",
-                "users/" . get_class($this),
-                $this->mfaAccount->dn,
-                array(),
-                "While trying to setup a paper token: piAmountOfPaperTokenOTPs is configured as 0. This isn't expected and " .
-                "should be modified to a value greater than zero (e.g. 20) via gosa.conf or propertyEditor.",
+        if (!isset($token["detail"]["webAuthnRegisterRequest"])) {
+            msg_dialog::display(
+                _("Internal error"),
+                _("privacyIDEA server gave invalid/malformed webAuthnRegisterRequest data.") . "<br>" .
+                $this->utils->pleaseTryAgainMsg(),
+                ERROR_DIALOG
             );
 
-            $amountOfPaperTokenOTPs = 20;
+            return false;
+        } else {
+            // TODO: Make a few sanity checks here.
         }
 
-        // Cut first item. (It is used as a confirmation TAN.)
-        // Also have exactly $amountOfPaperTokenOTPs in $tokenOTPs.
-        $tokenOTPs = array_splice($tokenOTPs, 1, $amountOfPaperTokenOTPs);
+        $tokenSerial = $token["detail"]["serial"];
+        $webAuthnRegisterRequest = $token["detail"]["webAuthnRegisterRequest"];
 
-        $this->smarty->assign("mfaTanJSON", addslashes(json_encode($tokenOTPs)));
-        $this->smarty->assign("mfaConfirmationTan", $tokenConfTAN);
+        // Please see: https://privacyidea.readthedocs.io/en/latest/modules/lib/tokentypes/webauthn.html
+        // before proceeding. :)
+
+        $this->smarty->assign(
+            "webAuthnRegisterRequestJSON",
+            addslashes(json_encode($webAuthnRegisterRequest))
+        );
         $this->smarty->assign("tokenSerial", $tokenSerial);
         $this->smarty->assign("tokenDescription", $this->tokenDescription);
 
@@ -198,67 +167,98 @@ class MFAPaperToken extends MFATokenHelper implements MFAToken
     /** @return bool */
     protected function preparePhase2()
     {
-        $this->smarty = get_smarty();
-        $this->smarty->assign("tokenSerial", $this->tokenSerial);
-        $this->smarty->assign("tokenDescription", $this->tokenDescription);
-        $this->smarty->assign("needsVerifying", $this->needsVerifying);
-        return true;
-    }
+        // We just created a token in the phase before this one.
+        // So it may happen that we reach the token limit by now..
+        // But we don't want to create a new token here in phase 2 but we want
+        // to verify the existing one.
+        // TODO: Find a good solution to this problem.
+        // $limitReachedMessage = $this->checkUserTokenLimit("webauthn");
+        // if (!empty($limitReachedMessage)) {
+        //     msg_dialog::display(
+        //         _("Internal error"),
+        //         $limitReachedMessage . "<br>" .
+        //         $this->utils->pleaseTryAgainMsg()
+        //     );
+        //     return false;
+        // }
 
-    /** @return bool */
-    protected function preparePhase3()
-    {
-        if ($this->needsVerifying != $this->tokenSerial) {
-            // Token doesn't actually need verifying.
-            return true;
+        $this->smarty->assign("tokenDescription", $this->tokenDescription);
+
+        if (isset($this->mfaWebAuthnRegisterResponse)) {
+            $resultArray = $this->enrollWebAuthnTokenStep2();
         }
 
-        $resultArray = $this->utils->enrollTokenStep2($this->tokenSerial, $this->mfaVerificationTan, "paper");
         if (!$resultArray["result"]["status"]) {
             if (isset($resultArray["result"]["error"]["message"])) {
                 msg_dialog::display(
-                    _("Error"),
-                    _("The verification of the TAN list was not successful. The confirmation TAN was probably not " .
-                      "entered correctly: please make sure that you have entered it correctly.") . "<br>" .
+                    _("Internal error"),
+                    _("Failed to execute step 2 of token enrollment.") . "<br>" .
                     $this->utils->pleaseTryAgainMsg() . "<br>" .
                     sprintf(_("privacyIDEA server error message: %s"), $resultArray["result"]["error"]["message"]),
                     ERROR_DIALOG
                 );
             } else {
                 msg_dialog::display(
-                    _("Error"),
-                    _("The verification of the TAN list was not successful. The confirmation TAN was probably not " .
-                      "entered correctly: please make sure that you have entered it correctly.") . "<br>" .
+                    _("Internal error"),
+                    _("Failed to execute step 2 of token enrollment.") . "<br>" .
                     $this->utils->pleaseTryAgainMsg(),
                     ERROR_DIALOG
                 );
             }
-
             return false;
         }
 
         return true;
     }
 
+    /**
+     * Enrolls a PI token with type '$tokentype' in a 2-step-process. Step 2 (verify).
+     * @return array Token array(...)
+     */
+    public function enrollWebAuthnTokenStep2()
+    {
+        $params = array();
+        $headers = array();
+
+        $params["serial"] = $this->tokenSerial;
+        $params["type"] = "webauthn";
+        $params = array_merge($params, $this->mfaWebAuthnRegisterResponse);
+
+        $tokenOrigin = $this->utils->getConfigStrValue("piTokenOrigin");
+        if (isset($tokenOrigin) && !empty($tokenOrigin)) {
+            $headers = array("Origin: " . $tokenOrigin);
+        }
+
+        // Call /token/init again to enroll/verify WebAuthn token.
+        $resultArray = $this->utils->piSendRequest($params, $headers, "POST", "/token/init");
+
+        // Refresh token countings cache.
+        // TODO: Use countUserTokens() but refactor it, so that it doesn't require $tokens.
+        //       and it should gather the tokens from endpoint /token/ itself.
+        $this->utils->getTokensOfUser($this->mfaAccount->getUid(), $this->mfaAccount->userRealm);
+
+        return $resultArray;
+    }
+
     public function getSetupCardTitle()
     {
-        return _("TAN list");
+        return _("Security key");
     }
 
     public function getSetupCardDescription()
     {
-        return _("Lists with transaction authentication numbers (TAN) are " .
-            "printed out and stored in a secure location. A TAN is a one-time " .
-            "password and a TAN from the list has to be entered on each login.");
+        return _("FIDO2-compatible hardware security keys are e.g. " .
+            "connected via USB or NFC and authentication is started " .
+            "using a device-specific mechanism, e.g. touching a sensor.");
     }
 
     public function getSetupCardButtonText()
     {
-        return _("Add TAN list");
+        return _("Add security key");
     }
 
     public function getSetupCardPriority()
     {
-        return 2;
+        return 0;
     }
 }

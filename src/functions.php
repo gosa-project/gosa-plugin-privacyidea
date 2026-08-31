@@ -8,4 +8,3 @@ function __(string $GETTEXT): string
 {
     return dgettext('GosaPrivacyIdea', $GETTEXT);
 }
-

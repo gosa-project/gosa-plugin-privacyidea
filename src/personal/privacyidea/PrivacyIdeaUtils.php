@@ -20,6 +20,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+namespace GosaPrivacyIdea\personal\privcyidea;
+
 // This is a dirty hack for development purposes.
 // Make sure to require 'privacyidea/privacyidea-php-client' and 'setasign/tfpdf' via composer in /usr/share/gosa/ and
 // locally. Add excludeFromAutoload files where necessary

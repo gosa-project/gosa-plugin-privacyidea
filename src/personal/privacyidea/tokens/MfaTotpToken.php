@@ -20,9 +20,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once(dirname(__FILE__) . "/interfaces/interface_MFAToken.inc");
+namespace GosaPrivacyIdea\personal\privcyidea\tokens;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
+use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
 
-class MFATotpToken extends MFATokenHelper implements MFAToken
+class MfaTotpToken extends MfaTokenHelper implements MfaToken
 {
     public $MAX_SETUP_PHASES = 4;
     public $TEMPLATE_PREFIX = "mfatype_totp/";

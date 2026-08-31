@@ -20,9 +20,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-require_once(dirname(__FILE__) . "/interfaces/interface_MFAToken.inc");
+namespace GosaPrivacyIdea\personal\privcyidea\tokens;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
+use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
 
-class MFAUnknownToken extends MFATokenHelper implements MFAToken
+class MfaUnknownToken extends MfaTokenHelper implements MfaToken
 {
     public function __construct(&$mfaAccount)
     {

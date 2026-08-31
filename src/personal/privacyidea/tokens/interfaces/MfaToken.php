@@ -20,7 +20,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-interface MFAToken
+namespace GosaPrivacyIdea\personal\privcyidea\tokens\interfaces;
+
+interface MfaToken
 {
     /** @return string Title of setup card. */
     public function getSetupCardTitle();

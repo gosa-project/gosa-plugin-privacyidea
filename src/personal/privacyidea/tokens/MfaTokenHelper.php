@@ -25,7 +25,10 @@
  * used by every MFAToken subclass. Every MFAToken subclass should extend this
  * class and implement the interface MFAToken.
  */
-class MFATokenHelper
+
+namespace GosaPrivacyIdea\personal\privcyidea\tokens;
+
+class MfaTokenHelper
 {
     /** @var PrivacyIdeaUtils */
     public PrivacyIdeaUtils $utils;
