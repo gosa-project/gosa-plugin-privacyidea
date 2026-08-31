@@ -21,18 +21,22 @@
  */
 
 namespace GosaPrivacyIdea\personal\privcyidea;
+use PILog;
+use PrivacyIDEA;
+use PIBadRequestException;
+use DateTime;
+use DateTimeZone;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
+use config;
+use log;
+use msg_dialog;
 
 // This is a dirty hack for development purposes.
 // Make sure to require 'privacyidea/privacyidea-php-client' and 'setasign/tfpdf' via composer in /usr/share/gosa/ and
 // locally. Add excludeFromAutoload files where necessary
 require_once("/usr/share/gosa/vendor/setasign/tfpdf/tfpdf.php");
 require_once("/usr/share/gosa/vendor/setasign/tfpdf/font/unifont/ttfonts.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/PrivacyIDEA.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/PIResponse.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/PILog.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/PIChallenge.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/PIBadRequestException.php");
-require_once("/usr/share/gosa/vendor/privacyidea/privacyidea-php-client/src/AuthenticationStatus.php");
 
 class PrivacyIdeaUtils implements PILog
 {

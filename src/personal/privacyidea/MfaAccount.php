@@ -21,6 +21,15 @@
  */
 
 namespace GosaPrivacyIdea\personal\privcyidea;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaWebAuthnToken;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTotpToken;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaPaperToken;
+use GosaPrivacyIdea\personal\privcyidea\tokens\MfaRegistrationToken;
+use msg_dialog;
+use session;
+use msgPool;
+use log;
+use stats;
 
 class MfaAccount extends \plugin
 {

@@ -23,6 +23,9 @@
 namespace GosaPrivacyIdea\personal\privcyidea\tokens;
 use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
 use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
+use GosaPrivacyIdea\personal\privcyidea\PDF\RecoveryKeyPdf;
+use msg_dialog;
+use log;
 
 class MfaRegistrationToken extends MfaTokenHelper implements MfaToken
 {
@@ -199,8 +202,6 @@ class MfaRegistrationToken extends MfaTokenHelper implements MfaToken
             return false;
         }
 
-        require_once(dirname(__FILE__) . "/../PDF/class_RecoveryKeyPDF.inc");
-
         /* Get givenName and sn via UID */
         $ldap = $this->config->get_ldap_link();
         $ldap->cd($this->config->current['BASE']);
@@ -232,8 +233,8 @@ class MfaRegistrationToken extends MfaTokenHelper implements MfaToken
         $givenName     = isset($attributes["givenName"][0])     ? trim($attributes["givenName"][0])     : "";
         $academicTitle = isset($attributes["academicTitle"][0]) ? trim($attributes["academicTitle"][0]) : "";
 
-        $infoPage = new RecoveryKeyPDF();
-        $infoPage->RecoveryKeyPDF(
+        $infoPage = new RecoveryKeyPdf();
+        $infoPage->RecoveryKeyPdf(
             $sn,
             $givenName,
             $academicTitle,

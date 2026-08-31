@@ -23,6 +23,8 @@
 namespace GosaPrivacyIdea\personal\privcyidea\tokens;
 use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
 use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
+use msg_dialog;
+use log;
 
 class MfaPaperToken extends MfaTokenHelper implements MfaToken
 {

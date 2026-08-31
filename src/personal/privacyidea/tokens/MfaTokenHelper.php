@@ -27,6 +27,7 @@
  */
 
 namespace GosaPrivacyIdea\personal\privcyidea\tokens;
+use GosaPrivacyIdea\personal\privcyidea\PrivacyIdeaUtils;
 
 class MfaTokenHelper
 {

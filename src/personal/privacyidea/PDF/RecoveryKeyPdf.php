@@ -20,7 +20,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* Don't load this class automatically */ class RecoveryKeyPDF extends tFPDF
+namespace GosaPrivacyIdea\personal\privcyidea\PDF;
+
+/* Don't load this class automatically */ class RecoveryKeyPdf extends tFPDF
 {
     public $HREF;
     public $I;
@@ -30,7 +32,7 @@
     /** @var string */
     public $fontFamily = "DejaVu";
 
-    public function RecoveryKeyPDF($sn, $givenname, $academictitle, $address, $uid, $mfaRecoveryKey)
+    public function RecoveryKeyPdf($sn, $givenname, $academictitle, $address, $uid, $mfaRecoveryKey)
     {
         global $config;
         $this->__construct('P', 'mm', 'A4');
