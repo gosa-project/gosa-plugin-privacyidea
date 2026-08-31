@@ -31,18 +31,13 @@ use RecursiveIteratorIterator;
 use config;
 use log;
 use msg_dialog;
-
-// This is a dirty hack for development purposes.
-// Make sure to require 'privacyidea/privacyidea-php-client' and 'setasign/tfpdf' via composer in /usr/share/gosa/ and
-// locally. Add excludeFromAutoload files where necessary
-require_once("/usr/share/gosa/vendor/setasign/tfpdf/tfpdf.php");
-require_once("/usr/share/gosa/vendor/setasign/tfpdf/font/unifont/ttfonts.php");
+use GosaPrivacyIdea\personal\privcyidea\MfaAccount;
 
 class PrivacyIdeaUtils implements PILog
 {
     private PrivacyIDEA $pi;
     private config $config;
-    private mfaAccount $mfaAccount;
+    private MfaAccount $mfaAccount;
     // TODO: Replace with GOsa's development mode.
     // WARNING: Setting ENABLE_DEBUG=true leaks PI serviceAccount creds to the client (via JS console).
     private bool $ENABLE_DEBUG = false;
@@ -68,7 +63,7 @@ class PrivacyIdeaUtils implements PILog
     /** @var string Version number of privacyIDEA server - gets set via retrievePiServerVersion(). */
     public $piServerVersion;
 
-    /** @param mfaAccount $mfaAccount MFA Account class (likely parent) */
+    /** @param MfaAccount $mfaAccount MFA Account class (likely parent) */
     public function __construct(&$mfaAccount)
     {
         assert(get_class($mfaAccount) == "mfaAccount");
