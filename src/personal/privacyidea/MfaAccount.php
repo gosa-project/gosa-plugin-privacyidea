@@ -205,7 +205,7 @@ class MfaAccount extends \plugin
             $this->is_account = true;
         }
 
-        /* Do we represent a valid mfaAccount? */
+        /* Do we represent a valid MfaAccount? */
         if (!$this->is_account) {
             switch ($theme) {
                 case 'classic':
@@ -964,7 +964,7 @@ class MfaAccount extends \plugin
         if (!$ldap->success()) {
             msg_dialog::display(
                 _("LDAP error"),
-                msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, get_class()),
+                msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, __CLASS__),
                 ERROR_DIALOG
             );
         }
@@ -974,7 +974,7 @@ class MfaAccount extends \plugin
     }
 
     /**
-     * Save the mfaAccount settings to the ldap database.
+     * Save the MfaAccount settings to the ldap database.
      */
     public function save()
     {
@@ -1001,7 +1001,7 @@ class MfaAccount extends \plugin
         if (!$ldap->success()) {
             msg_dialog::display(
                 _("LDAP error"),
-                msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, get_class()),
+                msgPool::ldaperror($ldap->get_error(), $this->dn, LDAP_MOD, __CLASS__),
                 ERROR_DIALOG
             );
         }
@@ -1069,7 +1069,7 @@ class MfaAccount extends \plugin
      */
     public static function plInfo()
     {
-        $properties = mfaAccount::getProperties();
+        $properties = MfaAccount::getProperties();
 
         // PI read only means that it can't be set/resetted or changed in any way via privacyIDEA API.
         // PI write only means that one can't get it via privacyIDEA API (Token actions for example).
@@ -1088,7 +1088,7 @@ class MfaAccount extends \plugin
             "plCategory"     => array("users"),
             "plOptions"      => array(),
             "plProperties"   => $properties,
-            "plRequirements" => array('onFailureDisablePlugin' => array(get_class())),
+            "plRequirements" => array('onFailureDisablePlugin' => array(__CLASS__)),
             "plProvidedAcls" => array(
                 # GOsa R+W
                 "allowedTokenTypes"     => _("MFA token types"),
