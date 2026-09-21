@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace GosaPrivacyIdea\personal\privcyidea;
+namespace GosaPrivacyIdea\personal\privacyidea;
 use PILog;
 use PrivacyIDEA;
 use PIBadRequestException;
@@ -31,7 +31,7 @@ use RecursiveIteratorIterator;
 use config;
 use log;
 use msg_dialog;
-use GosaPrivacyIdea\personal\privcyidea\MfaAccount;
+use GosaPrivacyIdea\personal\privacyidea\MfaAccount;
 
 class PrivacyIdeaUtils implements PILog
 {

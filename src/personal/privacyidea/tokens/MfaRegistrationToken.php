@@ -20,10 +20,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace GosaPrivacyIdea\personal\privcyidea\tokens;
-use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTokenHelper;
-use GosaPrivacyIdea\personal\privcyidea\tokens\interfaces\MfaToken;
-use GosaPrivacyIdea\personal\privcyidea\PDF\RecoveryKeyPdf;
+namespace GosaPrivacyIdea\personal\privacyidea\tokens;
+use GosaPrivacyIdea\personal\privacyidea\tokens\MfaTokenHelper;
+use GosaPrivacyIdea\personal\privacyidea\tokens\interfaces\MfaToken;
+use GosaPrivacyIdea\personal\privacyidea\PDF\RecoveryKeyPdf;
 use msg_dialog;
 use log;
 

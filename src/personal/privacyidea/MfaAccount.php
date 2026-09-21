@@ -20,11 +20,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-namespace GosaPrivacyIdea\personal\privcyidea;
-use GosaPrivacyIdea\personal\privcyidea\tokens\MfaWebAuthnToken;
-use GosaPrivacyIdea\personal\privcyidea\tokens\MfaTotpToken;
-use GosaPrivacyIdea\personal\privcyidea\tokens\MfaPaperToken;
-use GosaPrivacyIdea\personal\privcyidea\tokens\MfaRegistrationToken;
+namespace GosaPrivacyIdea\personal\privacyidea;
+use GosaPrivacyIdea\personal\privacyidea\tokens\MfaWebAuthnToken;
+use GosaPrivacyIdea\personal\privacyidea\tokens\MfaTotpToken;
+use GosaPrivacyIdea\personal\privacyidea\tokens\MfaPaperToken;
+use GosaPrivacyIdea\personal\privacyidea\tokens\MfaRegistrationToken;
 use msg_dialog;
 use session;
 use msgPool;

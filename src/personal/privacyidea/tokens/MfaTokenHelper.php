@@ -26,8 +26,8 @@
  * class and implement the interface MFAToken.
  */
 
-namespace GosaPrivacyIdea\personal\privcyidea\tokens;
-use GosaPrivacyIdea\personal\privcyidea\PrivacyIdeaUtils;
+namespace GosaPrivacyIdea\personal\privacyidea\tokens;
+use GosaPrivacyIdea\personal\privacyidea\PrivacyIdeaUtils;
 
 class MfaTokenHelper
 {
